@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block title %}{{ SITENAME }} - projects{% endblock %}
+{% block content %}
+<div></div>
+<div class="project-list nu">
+  {% for project in PROJECTS %}
+  <div class="project-title">
+    <span>{{ project.text }}</span>
+  </div>
+  <div class="project-links">
+    {% for link in project.links %}<a class="greyed-out dimmed" href="{{ link.url }}">{{ link.text }}</a>{{ " | " if not
+    loop.last else "" }}{% endfor %}
+  </div>
+  {% else %} No posts yet! {% endfor %}
+</div>
+{% endblock %}

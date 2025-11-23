@@ -1,0 +1,38 @@
+{% if article %}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ article.title }}",
+    "url": "{{ SITEURL }}/{{ article.url }}",
+    "description": "{{ article.summary|striptags|e }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ AUTHOR }}",
+      "url": "{{ SITEURL }}"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "{{ AUTHOR }}"
+    },
+    "datePublished": "{{ article.date.isoformat() }}",
+    "dateModified": "{{ article.modified.isoformat() if article.modified else article.date.isoformat() }}"
+  }
+</script>
+
+{% else %}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ AUTHOR }}",
+    "url": "{{ SITEURL }}",
+    "sameAs": [
+      {% for name, link in SOCIAL %}
+      {% if not link.startswith('mailto:') %}"{{ link }}"{% if not loop.last %},{% endif %}{% endif %}
+      {% endfor %}
+    ]
+  }
+</script>
+{% endif %}
