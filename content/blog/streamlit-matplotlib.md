@@ -39,8 +39,8 @@ import streamlit as st
 def fig_to_html(fig, dpi=100):
     """Convert a Matplotlib figure to base64-encoded HTML img tag.
 
-    Necessary to avoid issues with load-balanced production servers where containers
-    don't share a filesystem.
+    Necessary to avoid issues with load-balanced servers where containers don't share a
+    filesystem.
 
     Args:
         fig: Matplotlib figure object
