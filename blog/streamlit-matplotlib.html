@@ -12,30 +12,31 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 <link rel="stylesheet" type="text/css" href="/theme/css/style.css" />
+<link rel="stylesheet" type="text/css" href="/theme/css/pygment.css" />
 
 <!-- theme colors (safari only) -->
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#171717" />
 
-<link rel="canonical" href="/blog/streamlit-matplotlib.html" />
+<link rel="canonical" href="https://benranderson.github.io/blog/streamlit-matplotlib.html" />
 
 <meta property="og:title" content="Rendering Matplotlib plots on load-balanced Streamlit servers" />
-<meta property="og:url" content="/blog/streamlit-matplotlib.html" />
+<meta property="og:url" content="https://benranderson.github.io/blog/streamlit-matplotlib.html" />
 
-<meta name="description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, matplotlib plots may fail to render. For example, this code: import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) Can produce this less than useful output: This is because matplotlib plots depend on temporary files saved …" />
-<meta property="og:description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, matplotlib plots may fail to render. For example, this code: import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) Can produce this less than useful output: This is because matplotlib plots depend on temporary files saved …" />
+<meta name="description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, this code... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce this less than useful output: This is because Matplotlib plots depend on temporary files saved …" />
+<meta property="og:description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, this code... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce this less than useful output: This is because Matplotlib plots depend on temporary files saved …" />
 
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "Rendering Matplotlib plots on load-balanced Streamlit servers",
-    "url": "/blog/streamlit-matplotlib.html",
-    "description": "The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, matplotlib plots may fail to render. For example, this code: import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) Can produce this less than useful output: This is because matplotlib plots depend on temporary files saved …",
+    "url": "https://benranderson.github.io/blog/streamlit-matplotlib.html",
+    "description": "The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, this code... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce this less than useful output: This is because Matplotlib plots depend on temporary files saved …",
     "author": {
       "@type": "Person",
       "name": "Ben Randerson",
-      "url": ""
+      "url": "https://benranderson.github.io"
     },
     "publisher": {
       "@type": "Person",
@@ -81,57 +82,57 @@
     </header>
     <script src="/theme/js/theme-toggle.js"></script>
     <div class="container vertical-spacing no-top main-content">
-<h1 class="article-title"><a href="/blog/streamlit-matplotlib.html">Rendering Matplotlib plots on load-balanced Streamlit servers</a></h1>
+<h1 class="article-title"><a href="https://benranderson.github.io/blog/streamlit-matplotlib.html">Rendering Matplotlib plots on load-balanced Streamlit servers</a></h1>
 <div class="article-body">
     <h2>The Problem</h2>
-<p>When running Streamlit applications on load-balanced servers with multiple stateless backend containers, matplotlib plots may fail to render.</p>
-<p>For example, this code:</p>
-<div class="codehilite" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #FFAD66">import</span> <span style="color: #d4d2c8">streamlit</span> <span style="color: #FFAD66">as</span> <span style="color: #d4d2c8">st</span>
+<p>When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render.</p>
+<p>For example, this code...</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
 
-<span style="color: #d4d2c8">fig</span> <span style="color: #FFAD66">=</span> <span style="color: #d4d2c8">generate_matplotlib_fig()</span>
-<span style="color: #d4d2c8">st</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">pyplot(fig)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">generate_matplotlib_fig</span><span class="p">()</span>
+<span class="n">st</span><span class="o">.</span><span class="n">pyplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 </code></pre></div>
 
-<p>Can produce this less than useful output:</p>
-<p><img alt="render-fail" src="/images/render-fail.png"></p>
-<p>This is because matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.</p>
+<p>...can produce this less than useful output:</p>
+<p><img alt="render-fail" src="https://benranderson.github.io/images/render-fail.png"></p>
+<p>This is because Matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.</p>
 <h2>The Fix</h2>
-<p>This fix converts matplotlib plots to base64-encoded images embedded directly in the HTML instead of saving them as separate files. It ensures that when the server's load balancer routes requests to different backend containers, the image data travels with the page response rather than requiring a separate file lookup that might hit a different container that doesn't have the file.</p>
-<div class="codehilite" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #FFAD66">import</span> <span style="color: #d4d2c8">base64</span>
-<span style="color: #FFAD66">from</span> <span style="color: #d4d2c8">io</span> <span style="color: #FFAD66">import</span> <span style="color: #d4d2c8">BytesIO</span>
-<span style="color: #FFAD66">import</span> <span style="color: #d4d2c8">matplotlib.pyplot</span> <span style="color: #FFAD66">as</span> <span style="color: #d4d2c8">plt</span>
-<span style="color: #FFAD66">import</span> <span style="color: #d4d2c8">streamlit</span> <span style="color: #FFAD66">as</span> <span style="color: #d4d2c8">st</span>
+<p>This fix converts Matplotlib plots to base64-encoded images embedded directly in the HTML instead of saving them as separate files. It ensures that when the server's load balancer routes requests to different backend containers, the image data travels with the page response rather than requiring a separate file lookup that might hit a different container that doesn't have the file.</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
 
 
-<span style="color: #FFAD66">def</span> <span style="color: #FFD173">fig_to_html</span><span style="color: #d4d2c8">(fig,</span> <span style="color: #d4d2c8">dpi</span><span style="color: #FFAD66">=</span><span style="color: #DFBFFF">100</span><span style="color: #d4d2c8">):</span>
-<span style="color: #d4d2c8">    </span><span style="color: #7e8aa1">&quot;&quot;&quot;Convert a Matplotlib figure to base64-encoded HTML img tag.</span>
+<span class="k">def</span> <span class="nf">fig_to_html</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Matplotlib figure to base64-encoded HTML img tag.</span>
 
-<span style="color: #7e8aa1">    Necessary to avoid issues with load-balanced production servers where containers</span>
-<span style="color: #7e8aa1">    don&#39;t share a filesystem.</span>
+<span class="sd">    Necessary to avoid issues with load-balanced production servers where containers</span>
+<span class="sd">    don&#39;t share a filesystem.</span>
 
-<span style="color: #7e8aa1">    Args:</span>
-<span style="color: #7e8aa1">        fig: Matplotlib figure object</span>
-<span style="color: #7e8aa1">        dpi: Dots per inch for the output image (default 100 for web display)</span>
+<span class="sd">    Args:</span>
+<span class="sd">        fig: Matplotlib figure object</span>
+<span class="sd">        dpi: Dots per inch for the output image (default 100 for web display)</span>
 
-<span style="color: #7e8aa1">    Returns:</span>
-<span style="color: #7e8aa1">        HTML img tag with base64-encoded image data</span>
-<span style="color: #7e8aa1">    &quot;&quot;&quot;</span>
-    <span style="color: #FFAD66">with</span> <span style="color: #d4d2c8">BytesIO()</span> <span style="color: #FFAD66">as</span> <span style="color: #d4d2c8">buf:</span>
-        <span style="color: #d4d2c8">fig</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">savefig(buf,</span> <span style="color: #FFD173">format</span><span style="color: #FFAD66">=</span><span style="color: #D5FF80">&quot;png&quot;</span><span style="color: #d4d2c8">,</span> <span style="color: #d4d2c8">bbox_inches</span><span style="color: #FFAD66">=</span><span style="color: #D5FF80">&quot;tight&quot;</span><span style="color: #d4d2c8">,</span> <span style="color: #d4d2c8">dpi</span><span style="color: #FFAD66">=</span><span style="color: #d4d2c8">dpi)</span>
-        <span style="color: #7e8aa1"># close figure to free memory</span>
-        <span style="color: #d4d2c8">plt</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">close(fig)</span>
-        <span style="color: #d4d2c8">buf</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">seek(</span><span style="color: #DFBFFF">0</span><span style="color: #d4d2c8">)</span>
-        <span style="color: #d4d2c8">img_base64</span> <span style="color: #FFAD66">=</span> <span style="color: #d4d2c8">base64</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">b64encode(buf</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">read())</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">decode()</span>
-    <span style="color: #d4d2c8">img_data_uri</span> <span style="color: #FFAD66">=</span> <span style="color: #F29E74">f</span><span style="color: #D5FF80">&quot;data:image/png;base64,</span><span style="color: #95E6CB">{</span><span style="color: #d4d2c8">img_base64</span><span style="color: #95E6CB">}</span><span style="color: #D5FF80">&quot;</span>
-    <span style="color: #FFAD66">return</span> <span style="color: #F29E74">f</span><span style="color: #D5FF80">&#39;&lt;img src=&quot;</span><span style="color: #95E6CB">{</span><span style="color: #d4d2c8">img_data_uri</span><span style="color: #95E6CB">}</span><span style="color: #D5FF80">&quot; style=&quot;max-width: 100%; height: auto;&quot;&gt;&#39;</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        HTML img tag with base64-encoded image data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">BytesIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">buf</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="c1"># close figure to free memory</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">img_base64</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="n">img_data_uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data:image/png;base64,</span><span class="si">{</span><span class="n">img_base64</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;img src=&quot;</span><span class="si">{</span><span class="n">img_data_uri</span><span class="si">}</span><span class="s1">&quot; style=&quot;max-width: 100%; height: auto;&quot;&gt;&#39;</span>
 
-<span style="color: #d4d2c8">fig</span> <span style="color: #FFAD66">=</span> <span style="color: #d4d2c8">generate_matplotlib_fig()</span>
-<span style="color: #d4d2c8">st</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">markdown(fig_to_html(fig),</span> <span style="color: #d4d2c8">unsafe_allow_html</span><span style="color: #FFAD66">=True</span><span style="color: #d4d2c8">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">generate_matplotlib_fig</span><span class="p">()</span>
+<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="n">fig_to_html</span><span class="p">(</span><span class="n">fig</span><span class="p">),</span> <span class="n">unsafe_allow_html</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
 <p>As a bonus, this should make plot rendering faster than the original <code>st.pyplot()</code> approach for typical plot sizes.</p>
 <p>This is because the image data is embedded directly in the HTML response, requiring only one HTTP request/response cycle. In contrast, <code>st.pyplot()</code> saves the plot to a temporary file, sends HTML with an image reference, and then the browser makes a second HTTP request to fetch the image.</p>
-<p>By eliminating this round-trip and the filesystem I/O overhead, the base64 approach can deliver a faster user experience, especially on networks with higher latency.</p>
+<p>By removing this round-trip (and the filesystem I/O overhead) the base64 approach can be faster, especially on networks with higher latency.</p>
 <h2>Alternative Solutions</h2>
 <p>While the base64 encoding approach above is the most portable solution, there are other ways to solve this problem:</p>
 <ol>
@@ -141,18 +142,18 @@
 </ol>
 <h2>What Didn't Work</h2>
 <p>An earlier attempt to fix this involved converting the figure to a bytes buffer and passing that directly to Streamlit's <code>st.image()</code>, as shown below.</p>
-<div class="codehilite" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7e8aa1"># this doesn&#39;t work as Streamlit still saves images to temp files on disk</span>
-<span style="color: #FFAD66">def</span> <span style="color: #FFD173">fig_to_buf</span><span style="color: #d4d2c8">(fig):</span>
-<span style="color: #d4d2c8">    </span><span style="color: #7e8aa1">&quot;&quot;&quot;Convert a Matplotlib figure to an image bytes buffer.&quot;&quot;&quot;</span>
-    <span style="color: #d4d2c8">buf</span> <span style="color: #FFAD66">=</span> <span style="color: #d4d2c8">BytesIO()</span>
-    <span style="color: #d4d2c8">fig</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">savefig(buf,</span> <span style="color: #FFD173">format</span><span style="color: #FFAD66">=</span><span style="color: #D5FF80">&quot;png&quot;</span><span style="color: #d4d2c8">,</span> <span style="color: #d4d2c8">bbox_inches</span><span style="color: #FFAD66">=</span><span style="color: #D5FF80">&quot;tight&quot;</span><span style="color: #d4d2c8">)</span>
-    <span style="color: #7e8aa1"># close figure to free memory</span>
-    <span style="color: #d4d2c8">plt</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">close(fig)</span>
-    <span style="color: #d4d2c8">buf</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">seek(</span><span style="color: #DFBFFF">0</span><span style="color: #d4d2c8">)</span>
-    <span style="color: #FFAD66">return</span> <span style="color: #d4d2c8">buf</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># this doesn&#39;t work as Streamlit still saves images to temp files on disk</span>
+<span class="k">def</span> <span class="nf">fig_to_buf</span><span class="p">(</span><span class="n">fig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a Matplotlib figure to an image bytes buffer.&quot;&quot;&quot;</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="c1"># close figure to free memory</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">buf</span>
 
-<span style="color: #d4d2c8">fig</span> <span style="color: #FFAD66">=</span> <span style="color: #d4d2c8">generate_matplotlib_fig()</span> 
-<span style="color: #d4d2c8">st</span><span style="color: #FFAD66">.</span><span style="color: #d4d2c8">image(fig_to_buf(fig))</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">generate_matplotlib_fig</span><span class="p">()</span> 
+<span class="n">st</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">fig_to_buf</span><span class="p">(</span><span class="n">fig</span><span class="p">))</span>
 </code></pre></div>
 
 <p>However, this didn't work as Streamlit still stores the buffer contents to a temporary file on disk before serving it as an image via <code>st.image()</code>, and so the original problem remained.</p>
