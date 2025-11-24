@@ -16,8 +16,7 @@ THEME = "theme"
 MARKDOWN = {
     "extension_configs": {
         "markdown.extensions.codehilite": {
-            "noclasses": True,
-            "pygments_style": "lightbulb",
+            "noclasses": False,
         },
         "markdown.extensions.extra": {},
         "markdown.extensions.meta": {},

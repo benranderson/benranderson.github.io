@@ -8,9 +8,9 @@ authors: Ben Randerson
 
 ## The Problem
 
-When running Streamlit applications on load-balanced servers with multiple stateless backend containers, matplotlib plots may fail to render.
+When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render.
 
-For example, this code:
+For example, this code...
 
 ```python
 import streamlit as st
@@ -19,15 +19,15 @@ fig = generate_matplotlib_fig()
 st.pyplot(fig)
 ```
 
-Can produce this less than useful output:
+...can produce this less than useful output:
 
 ![render-fail]({static}/images/render-fail.png)
 
-This is because matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.
+This is because Matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.
 
 ## The Fix
 
-This fix converts matplotlib plots to base64-encoded images embedded directly in the HTML instead of saving them as separate files. It ensures that when the server's load balancer routes requests to different backend containers, the image data travels with the page response rather than requiring a separate file lookup that might hit a different container that doesn't have the file.
+This fix converts Matplotlib plots to base64-encoded images embedded directly in the HTML instead of saving them as separate files. It ensures that when the server's load balancer routes requests to different backend containers, the image data travels with the page response rather than requiring a separate file lookup that might hit a different container that doesn't have the file.
 
 ```python
 import base64
@@ -66,7 +66,7 @@ As a bonus, this should make plot rendering faster than the original `st.pyplot(
 
 This is because the image data is embedded directly in the HTML response, requiring only one HTTP request/response cycle. In contrast, `st.pyplot()` saves the plot to a temporary file, sends HTML with an image reference, and then the browser makes a second HTTP request to fetch the image.
 
-By eliminating this round-trip and the filesystem I/O overhead, the base64 approach can deliver a faster user experience, especially on networks with higher latency.
+By removing this round-trip (and the filesystem I/O overhead) the base64 approach can be faster, especially on networks with higher latency.
 
 ## Alternative Solutions
 
