@@ -1,8 +1,8 @@
 // Theme toggle functionality
-(function() {
-  const getTheme = () => localStorage.getItem('theme') || 
+(function () {
+  const getTheme = () => localStorage.getItem('theme') ||
     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  
+
   const updateIcon = (theme) => {
     const moonIcon = document.querySelector('.moon-icon');
     const sunIcon = document.querySelector('.sun-icon');
@@ -16,7 +16,7 @@
       }
     }
   };
-  
+
   const setTheme = (theme) => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
