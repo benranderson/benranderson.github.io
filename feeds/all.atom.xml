@@ -33,8 +33,8 @@
 &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;fig_to_html&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dpi&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
 &lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Convert a Matplotlib figure to base64-encoded HTML img tag.&lt;/span&gt;
 
-&lt;span class="sd"&gt;    Necessary to avoid issues with load-balanced production servers where containers&lt;/span&gt;
-&lt;span class="sd"&gt;    don&amp;#39;t share a filesystem.&lt;/span&gt;
+&lt;span class="sd"&gt;    Necessary to avoid issues with load-balanced servers where containers don&amp;#39;t share a&lt;/span&gt;
+&lt;span class="sd"&gt;    filesystem.&lt;/span&gt;
 
 &lt;span class="sd"&gt;    Args:&lt;/span&gt;
 &lt;span class="sd"&gt;        fig: Matplotlib figure object&lt;/span&gt;
