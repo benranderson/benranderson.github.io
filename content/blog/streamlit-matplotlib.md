@@ -10,7 +10,7 @@ authors: Ben Randerson
 
 When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render.
 
-For example, this code...
+For example, code like this...
 
 ```python
 import streamlit as st
@@ -19,7 +19,7 @@ fig = generate_matplotlib_fig()
 st.pyplot(fig)
 ```
 
-...can produce this less than useful output:
+...can produce a not particularly useful output like this:
 
 <img src="{static}/images/render-fail.png" alt="render-fail" width="400">
 
