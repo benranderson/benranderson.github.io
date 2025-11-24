@@ -10,7 +10,7 @@ Use [uv](https://docs.astral.sh/uv/) for Python dependency management.
 # Generate the site
 make html
 
-# Start development server with auto-reload (recommended)
+# Start development server with auto-reload
 make devserver
 
 # Clean generated files
@@ -22,11 +22,4 @@ make serve
 
 ## Publishing
 
-Generate production site and publish to GitHub Pages.
-
-```bash
-# Build with production settings
-make publish
-# Deploy to GitHub Pages
-make github
-```
+The site is automatically updated on each commit via a post-commit hook as described in [this FAQ](https://docs.getpelican.com/en/latest/tips.html#update-your-site-on-each-commit).
