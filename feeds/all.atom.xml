@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>Ben Randerson</title><link href="https://benranderson.github.io/" rel="alternate"/><link href="https://benranderson.github.io/feeds/all.atom.xml" rel="self"/><id>https://benranderson.github.io/</id><updated>2025-11-23T00:00:00+00:00</updated><entry><title>Rendering Matplotlib plots on load-balanced Streamlit servers</title><link href="https://benranderson.github.io/blog/streamlit-matplotlib.html" rel="alternate"/><published>2025-11-23T00:00:00+00:00</published><updated>2025-11-23T00:00:00+00:00</updated><author><name>Ben Randerson</name></author><id>tag:benranderson.github.io,2025-11-23:/blog/streamlit-matplotlib.html</id><summary type="html">&lt;h2&gt;The Problem&lt;/h2&gt;
 &lt;p&gt;When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render.&lt;/p&gt;
-&lt;p&gt;For example, this code...&lt;/p&gt;
+&lt;p&gt;For example, code like this...&lt;/p&gt;
 &lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;streamlit&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;st&lt;/span&gt;
 
 &lt;span class="n"&gt;fig&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;generate_matplotlib_fig&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="n"&gt;st&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pyplot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;...can produce this less than useful output:&lt;/p&gt;
+&lt;p&gt;...can produce a not particularly useful output like this:&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://benranderson.github.io/images/render-fail.png" alt="render-fail" width="400"&gt;&lt;/p&gt;
-&lt;p&gt;This is because Matplotlib plots depend on temporary files saved …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;The Problem&lt;/h2&gt;
+&lt;p&gt;This is because Matplotlib plots depend on …&lt;/p&gt;</summary><content type="html">&lt;h2&gt;The Problem&lt;/h2&gt;
 &lt;p&gt;When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render.&lt;/p&gt;
-&lt;p&gt;For example, this code...&lt;/p&gt;
+&lt;p&gt;For example, code like this...&lt;/p&gt;
 &lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;streamlit&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;st&lt;/span&gt;
 
 &lt;span class="n"&gt;fig&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;generate_matplotlib_fig&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="n"&gt;st&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pyplot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fig&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;...can produce this less than useful output:&lt;/p&gt;
+&lt;p&gt;...can produce a not particularly useful output like this:&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://benranderson.github.io/images/render-fail.png" alt="render-fail" width="400"&gt;&lt;/p&gt;
 &lt;p&gt;This is because Matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.&lt;/p&gt;
 &lt;h2&gt;The Fix&lt;/h2&gt;

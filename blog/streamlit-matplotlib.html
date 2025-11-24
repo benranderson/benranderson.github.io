@@ -24,8 +24,8 @@
 <meta property="og:title" content="Rendering Matplotlib plots on load-balanced Streamlit servers" />
 <meta property="og:url" content="https://benranderson.github.io/blog/streamlit-matplotlib.html" />
 
-<meta name="description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, this code... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce this less than useful output: This is because Matplotlib plots depend on temporary files saved …" />
-<meta property="og:description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, this code... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce this less than useful output: This is because Matplotlib plots depend on temporary files saved …" />
+<meta name="description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, code like this... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce a not particularly useful output like this: This is because Matplotlib plots depend on …" />
+<meta property="og:description" content="The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, code like this... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce a not particularly useful output like this: This is because Matplotlib plots depend on …" />
 
 <script type="application/ld+json">
   {
@@ -33,7 +33,7 @@
     "@type": "BlogPosting",
     "headline": "Rendering Matplotlib plots on load-balanced Streamlit servers",
     "url": "https://benranderson.github.io/blog/streamlit-matplotlib.html",
-    "description": "The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, this code... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce this less than useful output: This is because Matplotlib plots depend on temporary files saved …",
+    "description": "The Problem When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render. For example, code like this... import streamlit as st fig = generate_matplotlib_fig() st.pyplot(fig) ...can produce a not particularly useful output like this: This is because Matplotlib plots depend on …",
     "author": {
       "@type": "Person",
       "name": "Ben Randerson",
@@ -70,14 +70,14 @@
 <h1>Rendering Matplotlib plots on load-balanced Streamlit servers</h1>
 <h2>The Problem</h2>
 <p>When running Streamlit applications on load-balanced servers with multiple stateless backend containers, Matplotlib plots may fail to render.</p>
-<p>For example, this code...</p>
+<p>For example, code like this...</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
 
 <span class="n">fig</span> <span class="o">=</span> <span class="n">generate_matplotlib_fig</span><span class="p">()</span>
 <span class="n">st</span><span class="o">.</span><span class="n">pyplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 </code></pre></div>
 
-<p>...can produce this less than useful output:</p>
+<p>...can produce a not particularly useful output like this:</p>
 <p><img src="https://benranderson.github.io/images/render-fail.png" alt="render-fail" width="400"></p>
 <p>This is because Matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.</p>
 <h2>The Fix</h2>
