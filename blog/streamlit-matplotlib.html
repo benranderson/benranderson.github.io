@@ -94,7 +94,7 @@
 </code></pre></div>
 
 <p>...can produce this less than useful output:</p>
-<p><img alt="render-fail" src="https://benranderson.github.io/images/render-fail.png"></p>
+<p><img src="https://benranderson.github.io/images/render-fail.png" alt="render-fail" width="400"></p>
 <p>This is because Matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.</p>
 <h2>The Fix</h2>
 <p>This fix converts Matplotlib plots to base64-encoded images embedded directly in the HTML instead of saving them as separate files. It ensures that when the server's load balancer routes requests to different backend containers, the image data travels with the page response rather than requiring a separate file lookup that might hit a different container that doesn't have the file.</p>
