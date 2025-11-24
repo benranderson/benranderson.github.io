@@ -8,7 +8,7 @@
     <a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a>
     <hr />
   </div>
-  <time class="greyed-out">{{ article.date | strftime("%d-%m-%Y") }}</time>
+  <time class="greyed-out">{{ article.date | strftime("%Y-%m-%d") }}</time>
   {% else %} No posts yet! {% endfor %}
 </div>
 {% endblock %}
