@@ -21,7 +21,7 @@ st.pyplot(fig)
 
 ...can produce this less than useful output:
 
-![render-fail]({static}/images/render-fail.png)
+<img src="{static}/images/render-fail.png" alt="render-fail" width="400">
 
 This is because Matplotlib plots depend on temporary files saved to the filesystem, and requests routed to different containers may not find the image files created by other containers. Each container has its own ephemeral filesystem with no shared storage between them.
 
